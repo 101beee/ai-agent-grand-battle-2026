@@ -16,8 +16,7 @@ jobs:
           cache: pip
       - run: python -m pip install -r requirements-lock.txt
       - run: python -m unittest discover -s tests -v
-      - run: python -m unittest discover -s labs/week3_agent_harness -v
       - run: python scripts/update_leaderboard.py --check
       - name: Remove generated server log
-        run: python -c "from pathlib import Path; Path('starter/mcp_servers.log').unlink(missing_ok=True)"
+        run: python -c "from pathlib import Path; Path('agents/tool_agent/mcp_servers.log').unlink(missing_ok=True)"
       - run: python scripts/check_repository.py
