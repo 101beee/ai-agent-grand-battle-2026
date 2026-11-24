@@ -15,8 +15,6 @@ Model used:
 Team problem:
 ```
 
-Do not include authentication key values in the code.
-
 ## Team Problem
 
 Each team submits one problem that its system can solve and that is expected to be difficult for other teams.
