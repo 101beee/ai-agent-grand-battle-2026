@@ -1,0 +1,16 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+__MACOSX/
+.env
+.env.*
+!.env.example
+*.log
+runs/
+**/outputs/
+credentials*.json
+token*.json
+*.pem
+*.key
