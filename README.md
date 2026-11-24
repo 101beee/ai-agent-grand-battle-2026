@@ -79,7 +79,7 @@ Each team submits one problem that its own agent can solve and that is expected 
 | Type | Example |
 |---|---|
 | File analysis | Calculate transportation expenses for September 2026 from the supplied Excel ledger |
-| Action execution | Send “미션 수행합니다.” to the specified email address at 2:00 PM KST |
+| Action execution | Send “I am carrying out the mission.” to the specified email address at 2:00 PM KST |
 | Information retrieval | Identify a museum in a photo and calculate admission for a family on a specified date |
 
 ## Leaderboard
