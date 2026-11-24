@@ -1,6 +1,7 @@
-"""로컬 Markdown 링크, 공란 결과, 배포 금지 파일 유무를 확인한다."""
+"""문서 링크와 배포 파일을 검사한다."""
 from pathlib import Path
 import re
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 errors = []
@@ -16,11 +17,15 @@ for path in ROOT.rglob("*.md"):
         local = target.split("#", 1)[0]
         if local and not (path.parent / local).exists():
             errors.append(f"링크 없음: {path.relative_to(ROOT)} → {target}")
-for path in ROOT.rglob("*"):
-    if ".git" in path.parts or ".venv" in path.parts:
-        continue
-    if path.is_file() and (path.name == ".env" or path.suffix == ".log" or "runs" in path.parts):
-        errors.append(f"배포 제외 파일: {path.relative_to(ROOT)}")
+result = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "--show-toplevel"], capture_output=True, text=True)
+if result.returncode == 0 and Path(result.stdout.strip()).resolve() == ROOT:
+    tracked = subprocess.run(["git", "-C", str(ROOT), "ls-files", "-z"], capture_output=True, text=True, check=True)
+    for relative in tracked.stdout.split("\0"):
+        if not relative:
+            continue
+        path = Path(relative)
+        if path.name == ".env" or path.suffix == ".log" or "runs" in path.parts:
+            errors.append(f"배포 제외 파일: {relative}")
 if errors:
     raise SystemExit("\n".join(errors))
 print("Repository links and distribution files OK")

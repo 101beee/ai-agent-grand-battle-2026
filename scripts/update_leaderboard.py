@@ -1,4 +1,4 @@
-"""검수된 결과 CSV로 README와 리더보드 표를 함께 갱신한다. 빈 CSV는 7팀 공란."""
+"""결과 CSV로 README와 리더보드를 갱신한다."""
 import argparse
 import csv
 from decimal import Decimal, InvalidOperation
@@ -22,7 +22,7 @@ def read_results(path):
             row = {k: v.strip() for k, v in row.items()}
             team = row["team"]
             if not team or team in teams or any(c in team for c in "\n\r|<>[]\\`*_"):
-                raise ValueError(f"{line}행: 팀명은 비어 있거나 중복·Markdown 특수문자를 포함할 수 없습니다.")
+                raise ValueError(f"{line}행: 팀명은 비어 있거나 중복, Markdown 특수문자를 포함할 수 없습니다.")
             try:
                 solved = int(row["solved"])
                 seconds = Decimal(row["elapsed_seconds"])
@@ -38,7 +38,7 @@ def read_results(path):
             teams.add(team)
             rows.append((team, solved, seconds, url))
     if len(rows) > 7:
-        raise ValueError("포스터의 7팀을 초과합니다. 참가팀 수 공지가 변경되었는지 확인하세요.")
+        raise ValueError("참가팀 수는 최대 7팀입니다.")
     return sorted(rows, key=lambda r: (-r[1], r[2], r[0]))
 
 
