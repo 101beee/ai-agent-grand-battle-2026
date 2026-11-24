@@ -10,12 +10,8 @@ Submit the team's code by midnight on Wednesday, November 25, 2026. Include the 
 Team name:
 Team leader and members:
 Python version and operating system:
-Installation command:
-Execution command:
-Input format:
-Model name and total parameter count:
-Required environment variable names:
-Connected tools:
+Installation and execution instructions:
+Model used:
 Team problem:
 ```
 
