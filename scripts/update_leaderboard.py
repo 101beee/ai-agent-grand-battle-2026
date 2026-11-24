@@ -42,8 +42,13 @@ def read_results(path):
     return sorted(rows, key=lambda r: (-r[1], r[2], r[0]))
 
 
-def table(rows):
-    lines = ["| 순위 | 팀명 | 해결 문제 수 | 수행 시간 | 발표 / 시연 |",
+def table(rows, language="en"):
+    if language not in ("en", "ko"):
+        raise ValueError("Unsupported language")
+    header = ("| Rank | Team | Solved | Execution Time | Presentation / Demo |"
+              if language == "en" else "| 순위 | 팀명 | 해결 문제 수 | 수행 시간 | 발표 / 시연 |")
+    label, unit = ("View", "s") if language == "en" else ("보기", "초")
+    lines = [header,
              "|:---:|---|:---:|:---:|---|"]
     previous, rank = None, 0
     for index, (team, solved, seconds, url) in enumerate(rows, 1):
@@ -51,8 +56,8 @@ def table(rows):
         if key != previous:
             rank = index
         previous = key
-        link = f"[보기]({url})" if url else ""
-        lines.append(f"| {rank} | {team} | {solved} | {seconds:f}초 | {link} |")
+        link = f"[{label}]({url})" if url else ""
+        lines.append(f"| {rank} | {team} | {solved} | {seconds:f}{unit} | {link} |")
     lines.extend(["|  |  |  |  |  |"] * (7 - len(rows)))
     return "\n".join(lines)
 
@@ -69,11 +74,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="파일 변경 없이 동기화 상태 확인")
     args = parser.parse_args()
-    rendered = table(read_results(ROOT / "leaderboard/results.csv"))
+    rows = read_results(ROOT / "leaderboard/results.csv")
     pending = []
-    for relative in ["README.md", "leaderboard/README.md"]:
+    for relative in ["README.md", "README.KR.md", "leaderboard/README.md", "leaderboard/README.KR.md"]:
         path = ROOT / relative
         text = path.read_text(encoding="utf-8")
+        rendered = table(rows, "ko" if relative.endswith(".KR.md") else "en")
         pending.append((path, text, replace_table(text, rendered)))
     if args.check:
         if any(old != new for _, old, new in pending):
