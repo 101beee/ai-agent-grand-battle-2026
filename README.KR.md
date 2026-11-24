@@ -111,3 +111,10 @@ python agents/tool_agent/main.py "위키백과에서 서울대학교를 찾아 �
 ├── scripts/              # 리더보드 관리와 저장소 검사
 └── tests/                # 동작 검증
 ```
+
+## 문의
+
+| 담당자 | 이메일 |
+|---|---|
+| 백한비 조교 | [hanbi218@snu.ac.kr](mailto:hanbi218@snu.ac.kr) |
+| 이상훈 조교 | [sanghoon@snu.ac.kr](mailto:sanghoon@snu.ac.kr) |

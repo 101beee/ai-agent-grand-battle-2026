@@ -111,3 +111,10 @@ Each team submits one problem that its own agent can solve and that is expected 
 ├── scripts/              # Leaderboard generation and repository checks
 └── tests/                # Behavior checks
 ```
+
+## Contact
+
+| Teaching Assistant | Email |
+|---|---|
+| 백한비 | [hanbi218@snu.ac.kr](mailto:hanbi218@snu.ac.kr) |
+| 이상훈 | [sanghoon@snu.ac.kr](mailto:sanghoon@snu.ac.kr) |
