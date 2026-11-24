@@ -1,68 +1,55 @@
-# 에이전트 구조
+English | [한국어](ARCHITECTURE.KR.md)
 
-## 실행 흐름
+# Agent Architecture
 
-```mermaid
-flowchart LR
-    U[텍스트 목표] --> H[Agent Harness]
-    H <--> L[로컬 모델]
-    H <--> C[MCP Client]
-    C <--> S[MCP Server]
-    S <--> T[브라우저와 웹 정보 및 Excel]
-    H --> R[최종 답변과 작업 결과]
-```
+The model selects the next action and its inputs. The harness validates the request, executes the tool, and returns the result to the model. The model then chooses another action or produces a final answer.
 
-모델은 다음 행동과 도구 입력을 결정합니다. Harness는 요청을 검사하고 도구를 실행한 뒤 결과를 모델에 전달합니다. 모델은 관찰한 결과를 바탕으로 다음 행동을 선택하거나 최종 답변을 작성합니다.
+## Tool Agent
 
-## 도구 사용 에이전트
-
-| 파일 또는 함수 | 역할 |
+| File or function | Responsibility |
 |---|---|
-| `agents/tool_agent/main.py` | 모델 호출과 MCP 연결을 관리하는 Host |
-| `make_client()` | 환경변수로 로컬 모델 클라이언트 생성 |
-| `connect()` | MCP 서버 초기화와 도구 목록 수집 |
-| `schema()` | MCP 도구 정보를 모델의 함수 호출 형식으로 변환 |
-| `call_tool()` | 도구 실행 결과와 오류 반환 |
-| `ask()` | 모델 판단과 도구 실행을 반복 |
-| `agents/tool_agent/tools.py` | MCP 도구 구현 |
+| `agents/tool_agent/main.py` | Host that manages model calls and MCP connections |
+| `make_client()` | Create a local model client from environment variables |
+| `connect()` | Initialize MCP servers and collect their tools |
+| `schema()` | Convert MCP tool definitions to model function schemas |
+| `call_tool()` | Return tool results and errors |
+| `ask()` | Repeat model decisions and tool execution |
+| `agents/tool_agent/tools.py` | MCP tool implementations |
 
-MCP 연결은 `initialize`, `tools/list`, `tools/call` 순서로 진행됩니다. 서버 이름을 도구 이름의 접두어로 붙여 이름 충돌을 방지합니다. 최대 모델 호출 횟수는 `MAX_TURNS`에서 설정합니다.
+MCP connections follow `initialize`, `tools/list`, and `tools/call`. Tool names include a server prefix to prevent collisions. Set the model call limit with `MAX_TURNS`.
 
-| 도구 | 기능 |
+| Tool | Function |
 |---|---|
-| `tools__open_webpage` | 기본 브라우저에서 웹페이지 열기 |
-| `tools__search_wikipedia` | 한국어 위키백과 검색과 요약 조회 |
-| `tools__create_excel` | CSV 표를 Excel 파일로 저장하고 열기 |
-| `fetch__fetch` | 웹페이지 내용 조회 |
+| `tools__open_webpage` | Open a webpage in the default browser |
+| `tools__search_wikipedia` | Search Korean Wikipedia and retrieve a summary |
+| `tools__create_excel` | Save a CSV table as an Excel file and open it |
+| `fetch__fetch` | Retrieve webpage content |
 
-## 다중 에이전트
+## Team Agent
 
-```text
-기획자 → 예산 담당 → 검토자
-          공유 작업판
-```
+The planner proposes a choice, the budget agent calculates its cost, and the reviewer checks the constraints. Results pass between roles through a shared board.
 
-| 파일 또는 구성 | 역할 |
+| File or component | Responsibility |
 |---|---|
-| `agents/team_agent/config.py` | 도구 사용 여부와 모델 설정 |
-| `agents/team_agent/runner.py` | 모델 생성, 실행, 결과 조회 명령 |
-| `agents/team_agent/harness.py` | 역할, 도구, 모델 클라이언트와 실행 루프 |
-| `agents/team_agent/modelfiles/` | 역할별 모델의 파라미터와 시스템 프롬프트 |
-| `ROLES` | 역할별 목표와 도구 권한 |
-| `ToolRegistry.execute()` | 허용 도구와 입력값 검사 |
-| `run_agent()` | 계획, 실행, 결과 확인과 종료 제어 |
-| `run_case()` | 역할별 실행과 공유 작업판 전달 |
+| `agents/team_agent/config.py` | Tool-use and model settings |
+| `agents/team_agent/runner.py` | Commands to create models, run agents, and inspect results |
+| `agents/team_agent/harness.py` | Roles, tools, model client, and execution loop |
+| `agents/team_agent/modelfiles/` | Role-specific model parameters and system prompts |
+| `ROLES` | Role objectives and tool permissions |
+| `ToolRegistry.execute()` | Validate tool permissions and inputs |
+| `run_agent()` | Manage planning, execution, observations, and termination |
+| `run_case()` | Run each role and pass results through the shared board |
 
-기본 선택 예제는 인원수, 예산, 비건 조건을 만족하는 간식 세트를 고릅니다. 각 역할은 자신의 대화 기록을 유지하고, 앞선 역할의 결과는 `shared_board`로 전달받습니다. 대회 문제에 맞게 역할과 도구를 교체할 수 있습니다.
+The included selection example chooses a snack set under group-size, budget, and vegan constraints. Each role maintains its own conversation history and receives previous results through `shared_board`. Teams can replace the roles and tools for their competition strategy.
 
-## 기록
+## Logs
 
-| 로그 태그 | 내용 |
+| Tag | Meaning |
 |---|---|
-| `[MODEL]` | 모델 호출 |
-| `[PLAN]` | 작업 계획 |
-| `[TOOL CALL]` | 실행할 도구 |
-| `[TOOL RESULT]` | 도구의 실행 결과 |
-| `[HANDOFF]` | 다음 역할로 전달 |
-| `[FINAL]` | 최종 답변 |
-| `[VERIFY]` | 조건 검사 결과 |
+| `[MODEL]` | Model call |
+| `[PLAN]` | Task plan |
+| `[TOOL CALL]` | Requested tool |
+| `[TOOL RESULT]` | Tool execution result |
+| `[HANDOFF]` | Transfer to the next role |
+| `[FINAL]` | Final answer |
+| `[VERIFY]` | Constraint validation result |

@@ -33,6 +33,14 @@ class LeaderboardTests(unittest.TestCase):
             with self.subTest(body=body), self.assertRaises(ValueError):
                 self.read(body)
 
+    def test_english_and_korean_results_keep_the_same_scores(self):
+        rows = self.read("TeamA,3,12.5,https://example.com/demo\n")
+        english, korean = lb.table(rows, "en"), lb.table(rows, "ko")
+        self.assertIn("| Rank | Team | Solved |", english)
+        self.assertIn("| 순위 | 팀명 | 해결 문제 수 |", korean)
+        self.assertIn("| 1 | TeamA | 3 | 12.5s | [View]", english)
+        self.assertIn("| 1 | TeamA | 3 | 12.5초 | [보기]", korean)
+
 
 if __name__ == "__main__":
     unittest.main()

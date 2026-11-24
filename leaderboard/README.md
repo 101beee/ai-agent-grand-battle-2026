@@ -1,7 +1,9 @@
-# 리더보드
+English | [한국어](README.KR.md)
+
+# Leaderboard
 
 <!-- LEADERBOARD:START -->
-| 순위 | 팀명 | 해결 문제 수 | 수행 시간 | 발표 / 시연 |
+| Rank | Team | Solved | Execution Time | Presentation / Demo |
 |:---:|---|:---:|:---:|---|
 |  |  |  |  |  |
 |  |  |  |  |  |
@@ -12,4 +14,4 @@
 |  |  |  |  |  |
 <!-- LEADERBOARD:END -->
 
-해결 문제 수를 우선하며, 동률이면 수행 시간이 짧은 팀이 높은 순위를 차지합니다.
+Teams rank first by the number of solved problems, then by shorter execution time.
